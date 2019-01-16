@@ -7,6 +7,9 @@ public class PassOne {
 	HashMap<String, String>register = new HashMap<String, String>();
 	HashMap<String, String>condition = new HashMap<String, String>();
 	HashMap<String, String>directive = new HashMap<String, String>();
+	HashMap<String, String>symbol = new HashMap<String, String>();
+
+
 	PassOne(){
 		opcode.put("STOP", "00");
 		opcode.put("ADD", "01");
@@ -32,17 +35,20 @@ public class PassOne {
 		condition.put("GE", "5");
 		condition.put("ANY", "6");
 		
-		directive.put("START", "1");
-		directive.put("END", "2");
+		directive.put("START", "001");
+		directive.put("END", "002");
+		directive.put("DS", "003");
 	
 	}
 	
-	void show(){
-		System.out.println( opcode.entrySet());
-		System.out.println(register.entrySet());
-		System.out.println(condition.entrySet());
-		System.out.println(directive.entrySet());
-}
+	void show()
+	{
+		//System.out.println( opcode.entrySet());
+		//System.out.println(register.entrySet());
+		//System.out.println(condition.entrySet());
+		//System.out.println(directive.entrySet());
+		System.out.println(symbol.entrySet());
+	}
 	String getFromDirective(String key){
 		return directive.get(key);
 	}
@@ -59,9 +65,13 @@ public class PassOne {
 		return condition.get(key);
 	}
 	
+	String getFromSymbol(String key){
+		return symbol.get(key);
+	}
+	
 	int isInOpcode(String key){
-		
-		if (Integer.parseInt(opcode.get(key)) >= -1){
+		System.out.print(opcode.get(key));
+		if (opcode.get(key) != null){
 			return 1;
 		}
 		else
@@ -69,7 +79,7 @@ public class PassOne {
 	}
 	
 	int isInRegister(String key){
-		if (Integer.parseInt(register.get(key)) >=0){
+		if (register.get(key) != null){
 			return 1;
 		}
 		else
@@ -78,12 +88,24 @@ public class PassOne {
 	}
 	
 	int isInCondition(String key){
-		if (Integer.parseInt(condition.get(key)) >= 0){
+		if (condition.get(key) != null){
 			return 1;
 		}
 		else
 			return 0;
 	
+	}
+	
+	int isInSymbol(String key){
+		if(symbol.get(key) != null){
+			return 1;
+		}
+		else
+			return 0;
+	}
+	
+	void addInSymbols(String key, String val){
+		symbol.put(key, val);
 	}
 	
 	public static void main(String [] args) throws IOException{
@@ -104,15 +126,19 @@ public class PassOne {
 		//b2.write("dhbdghdggh");
 		  
 		String s;
+		int lc=0;
 		while((s = b1.readLine()) != null){
 			//System.out.println(s);
 			StringTokenizer st=new StringTokenizer(s);
 			while(st.hasMoreTokens()){
 				String temp = st.nextToken();
-				System.out.println(temp);
+				//System.out.println(temp + "\t"+lc);
+					if(lc == 1){
+						lc = Integer.parseInt(temp);
+					}
 					if(temp.equals("START")){
-						//b2.write("dhbdghdggh");
 						b2.write(passone.getFromDirective(temp));
+						lc = 1;
 					}
 					
 					else if(temp.equals("END")){
@@ -120,25 +146,49 @@ public class PassOne {
 						b2.write(passone.getFromDirective(temp));
 					}
 					
-					else if(passone.isInOpcode(temp)> 0){
+					else if(temp.equals("DS")){
+						//b2.write("dhbdghdggh");
+						b2.write(passone.getFromDirective(temp));
+					}
+					
+					
+					else if(passone.isInOpcode(temp) == 1){
+						//System.out.print(passone.getFromOpcode(temp));
 						b2.write(passone.getFromOpcode(temp));
 					}
 					
-					else if(passone.isInRegister(temp)>0){
+					else if(passone.isInRegister(temp) == 1){
 						b2.write(passone.getFromRegister(temp));
 					}
-					else if(passone.isInCondition(temp)>0){
+					else if(passone.isInCondition(temp) == 1){
 						b2.write(passone.getFromCondition(temp));
 					}
 					else{
+						
+						if(passone.isInSymbol(temp) == 0){
+							//if(st.nextToken() == "DS" || st.nextToken() == "DC"){
+								passone.addInSymbols(temp, Integer.toString(lc));
+							//}
+							//else{
+								//continue;
+							//}
+							
+						}
+						else if(passone.isInSymbol(temp) != 0){
+							
+							b2.write(passone.getFromSymbol(temp));
+						}
 						b2.write(temp);
 					}
 				
-				
+					b2.write("\t");
+					System.out.print("  ");
 			}
-			//b2.write("\n");
+			b2.write("\n");
+			lc++;
 		}
 	b2.close();
+	passone.show();
 }
-
+	
 }
