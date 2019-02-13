@@ -1,0 +1,15 @@
+%{
+#include "y.tab.h"
+%}
+
+%%
+int|float 	{return DTYPE;}
+[a-z]+		{return ID;}
+";"			{return SEMI;}
+","			{return COMMA;}
+%%
+
+int yywrap(){
+
+return 1;
+}													
